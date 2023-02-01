@@ -5,7 +5,7 @@
 #define digitalDHT 32
 
 
-float lastTime = 0;
+unsigned long lastTime = 0;
 int bitTime, bit = 0;
 int dataBuffer[40] = {};
 int humidityBuffer[16], temperatureBuffer[16] = {};
@@ -14,59 +14,49 @@ int humidity, temperatur = 0.0;
 
 void temperature()
 {
+  int counter = 0;
   Serial.println("---------------Temperature-------------------");
   pinMode(digitalDHT, OUTPUT);
-  digitalWrite(digitalDHT, HIGH);
-  delay(12);
   digitalWrite(digitalDHT, LOW);
-  delay(0.04);
+  delay(5);
   pinMode(digitalDHT, INPUT);
 
   lastTime = micros();
-  while(micros() - lastTime < 80 && digitalRead(digitalDHT) == 0){Serial.print(digitalRead(digitalDHT));};
-  Serial.println();
+  while((micros()-lastTime < 80) && digitalRead(digitalDHT) == LOW);
   lastTime = micros();
-  while(micros() - lastTime < 80 && digitalRead(digitalDHT) == 1){Serial.print(digitalRead(digitalDHT));};
-  Serial.println();
-  for(int i = 0; i < 40; i++)
+  while((micros()-lastTime < 80) && digitalRead(digitalDHT) == HIGH);
+  while(true)
   {
     lastTime = micros();
-    while(micros() - lastTime < 50 && digitalRead(digitalDHT) == 0){Serial.print(digitalRead(digitalDHT));};;
-
+    while((micros()-lastTime < 50) && digitalRead(digitalDHT) == LOW);
     lastTime = micros();
-    while(digitalRead(digitalDHT) == 1){Serial.print(digitalRead(digitalDHT));};
+    while(digitalRead(digitalDHT) == HIGH);
     bitTime = micros() - lastTime;
-    if(26 < bit < 28)
+    if(bitTime < 30)
       bit = 0;
     else
       bit = 1;
-    dataBuffer[i] = bit;
+    dataBuffer[counter] = bit;
+    counter++;
+    if(counter == 40)
+      break;
   }
 
-  Serial.print("The temperature is: ");
-
-  for(int i = 0; i < 16; i++)
-  {
-    humidityBuffer[i] = dataBuffer[i];
-    humidity = (unsigned)humidityBuffer[i] << 1;
-  }
-    
-  
-  for(int i = 16; i < 32; i++)
-  {
-    temperatureBuffer[i] = dataBuffer[i];
-    temperatur = (unsigned)temperatureBuffer[i] << 1;
-  }
-  for(int i = 32; i < 40; i++)
-    checksumBuffer[i] = dataBuffer[i];
-
-  for(int i = 32; i < 40; i++)
+  for(int i = 0; i < 40; i++)
     Serial.print(dataBuffer[i]);
+  Serial.println();
 
-  Serial.println(temperatur);
+  for(int i = 40; i > 24; i--)
+    humidityBuffer[i-25] = dataBuffer[i];
+  
+  for(int i = 24; i > 8; i--)
+    temperatureBuffer[i-9] = dataBuffer[i];
+  
+  for(int i = 8; i >0; i--)
+    checksumBuffer[i-1] = dataBuffer[i];
 
   Serial.println("---------------------------------------------");
-  delay(2000);
+  delay(3000);
 
 }
 
