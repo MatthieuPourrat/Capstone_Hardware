@@ -18,5 +18,4 @@ class MQ7{
         double computeRs();
         double computePPM();
         void printMQ7();
-    
 };

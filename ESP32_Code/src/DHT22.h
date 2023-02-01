@@ -21,4 +21,6 @@ class DHT22{
         void computeHumidity();
         void computeTemperature();
         void print();
+        double getHumidity();
+        double getTemperature();
 };

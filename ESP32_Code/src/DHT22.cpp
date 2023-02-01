@@ -12,13 +12,8 @@ DHT22::DHT22()
     this->bitTime=0;
     this->bit=0;
 }
-DHT22::~DHT22(){
-    this->humidity = 0.0;
-    this->temperatur = 0.0;
-    this->lastTime=0;
-    this->bitTime=0;
-    this->bit=0;
-};
+
+DHT22::~DHT22(){};
 
 void DHT22::readSensor()
 {
@@ -89,4 +84,14 @@ void DHT22::print()
     Serial.println(" degrees Celcius.");
     Serial.println("------------------------------------------------");
     Serial.println();
+}
+
+double DHT22::getHumidity()
+{
+    return humidity/10;
+}
+
+double DHT22::getTemperature()
+{
+    return temperatur/10;
 }
