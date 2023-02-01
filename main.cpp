@@ -10,10 +10,12 @@ int bitTime, bit = 0;
 int dataBuffer[40] = {};
 int humidityBuffer[16], temperatureBuffer[16] = {};
 int checksumBuffer[8] = {};
-int humidity, temperatur = 0.0;
+double humidity, temperatur = 0.0;
 
 void temperature()
 {
+  humidity = 0.0;
+  temperatur = 0.0;
   int counter = 0;
   Serial.println("---------------Temperature-------------------");
   pinMode(digitalDHT, OUTPUT);
@@ -25,12 +27,10 @@ void temperature()
   delay(0.04);
   pinMode(digitalDHT, INPUT);
 
-
   lastTime = micros();
   while((micros()-lastTime < 80) && digitalRead(digitalDHT) == LOW);
   lastTime = micros();
   while((micros()-lastTime < 80) && digitalRead(digitalDHT) == HIGH);
-
   while(true)
   {
     lastTime = micros();
@@ -48,29 +48,34 @@ void temperature()
       break;
   }
 
-  for(int i = 0; i < 40; i++)
-    Serial.print(dataBuffer[i]);
-  Serial.println();
+  for(int i = 0; i < 16; i++)
+    humidityBuffer[i] = dataBuffer[i];
+  
+  for(int i = 16; i < 32; i++)
+    temperatureBuffer[i-16] = dataBuffer[i];
+  
+  for(int i = 32; i < 40; i++)
+    checksumBuffer[i-32] = dataBuffer[i];
 
-  for(int i = 40; i > 24; i--)
-    humidityBuffer[i-25] = dataBuffer[i];
-  
-  for(int i = 24; i > 8; i--)
-    temperatureBuffer[i-9] = dataBuffer[i];
-  
-  for(int i = 8; i >0; i--)
-    checksumBuffer[i-1] = dataBuffer[i];
+  for(int i = 0; i < 16; i++)
+    humidity = humidity + (humidityBuffer[i] * pow(2,16-i-1));
+    
+  for(int i = 0; i < 16; i++)
+    temperatur += temperatureBuffer[i] * pow(2,16-i-1);
+
+  Serial.print("The humidity level is: ");
+  Serial.println(humidity/10);
+
+  Serial.print("The temperature level is: ");
+  Serial.println(temperatur/10);
 
   Serial.println("---------------------------------------------");
   delay(3000);
-
 }
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
-  //pinMode(analogMQ, INPUT);
-  //pinMode(digitalPIN, INPUT);
 }
 
 void loop() {
