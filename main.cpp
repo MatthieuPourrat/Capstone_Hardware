@@ -17,14 +17,20 @@ void temperature()
   int counter = 0;
   Serial.println("---------------Temperature-------------------");
   pinMode(digitalDHT, OUTPUT);
+  digitalWrite(digitalDHT, HIGH);
+  delay(250);
   digitalWrite(digitalDHT, LOW);
   delay(5);
+  digitalWrite(digitalDHT, HIGH);
+  delay(0.04);
   pinMode(digitalDHT, INPUT);
+
 
   lastTime = micros();
   while((micros()-lastTime < 80) && digitalRead(digitalDHT) == LOW);
   lastTime = micros();
   while((micros()-lastTime < 80) && digitalRead(digitalDHT) == HIGH);
+
   while(true)
   {
     lastTime = micros();
