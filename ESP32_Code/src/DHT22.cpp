@@ -41,9 +41,9 @@ void DHT22::readSensor()
         while(digitalRead(digitalDHT) == HIGH);
         bitTime = micros() - lastTime;
         if(bitTime < 30)
-        bit = 0;
+            bit = 0;
         else
-        bit = 1;
+            bit = 1;
         dataBuffer[counter] = bit;
         counter++;
         if(counter == 40)

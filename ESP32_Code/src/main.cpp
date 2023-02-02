@@ -6,11 +6,12 @@
 void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
+  delay(1000); //time for the serial to display properly.
 }
 
 void loop() {
-  MQ7 deviceMQ7;
-  DHT22 deviceDHT22;
+  MQ7 deviceMQ7; //instanciate a MQ7 object.
+  DHT22 deviceDHT22; //instanciate a DHT22 object.
   deviceMQ7.computeRs();
   deviceMQ7.computePPM();
   deviceMQ7.printMQ7();

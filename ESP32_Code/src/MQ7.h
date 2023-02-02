@@ -15,6 +15,7 @@ class MQ7{
 
     public:
         MQ7();
+        ~MQ7();
         double computeRs();
         double computePPM();
         void printMQ7();
