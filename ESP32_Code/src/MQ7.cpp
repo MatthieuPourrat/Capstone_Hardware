@@ -10,8 +10,6 @@ MQ7::MQ7()
     this->ppm = 0.0;
 }
 
-MQ7::~MQ7(){};
-
 double MQ7::computeRs()
 {
     Rs = (vin - (analogRead(analogMQ) * pow(10, -3)))/(analogRead(analogMQ) * pow(10, -3));

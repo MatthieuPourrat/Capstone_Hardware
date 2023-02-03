@@ -12,8 +12,13 @@ DHT22::DHT22()
     this->bitTime=0;
     this->bit=0;
 }
-
-DHT22::~DHT22(){};
+DHT22::~DHT22(){
+    this->humidity = 0.0;
+    this->temperatur = 0.0;
+    this->lastTime=0;
+    this->bitTime=0;
+    this->bit=0;
+};
 
 void DHT22::readSensor()
 {
@@ -41,9 +46,9 @@ void DHT22::readSensor()
         while(digitalRead(digitalDHT) == HIGH);
         bitTime = micros() - lastTime;
         if(bitTime < 30)
-            bit = 0;
+        bit = 0;
         else
-            bit = 1;
+        bit = 1;
         dataBuffer[counter] = bit;
         counter++;
         if(counter == 40)
@@ -51,13 +56,15 @@ void DHT22::readSensor()
     }
 }
 
-void DHT22::computeHumidity()
+float DHT22::computeHumidity()
 {
     for(int i = 0; i < 16; i++)
         humidity = humidity + (dataBuffer[i] * pow(2,16-i-1));
+
+    return humidity;
 }
 
-void DHT22::computeTemperature()
+float DHT22::computeTemperature()
 {
     if(dataBuffer[0] == 1)
     {
@@ -70,6 +77,7 @@ void DHT22::computeTemperature()
         for(int i = 16; i < 32; i++)
             temperatur = temperatur + (dataBuffer[i] * pow(2,32-i-1));
     }
+    return temperatur;
 }
 
 void DHT22::print()
@@ -84,14 +92,4 @@ void DHT22::print()
     Serial.println(" degrees Celcius.");
     Serial.println("------------------------------------------------");
     Serial.println();
-}
-
-double DHT22::getHumidity()
-{
-    return humidity/10;
-}
-
-double DHT22::getTemperature()
-{
-    return temperatur/10;
 }

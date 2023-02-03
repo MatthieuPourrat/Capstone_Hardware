@@ -18,9 +18,7 @@ class DHT22{
         DHT22();
         ~DHT22();
         void readSensor();
-        void computeHumidity();
-        void computeTemperature();
+        float computeHumidity();
+        float computeTemperature();
         void print();
-        double getHumidity();
-        double getTemperature();
 };
