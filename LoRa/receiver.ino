@@ -1,9 +1,15 @@
 #include <SPI.h>
 #include <LoRa.h>
 
+#define ss 10
+#define rst 23
+#define dio0 8
+
+/*
 #define ss 4
 #define rst 7
 #define dio0 5
+*/
 
 void setup() {
   Serial.begin(9600);
