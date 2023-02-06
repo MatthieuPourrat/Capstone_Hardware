@@ -19,57 +19,74 @@ double ppmLoRa = 0.0;
 
 float heartRate()
 {
-
+  Serial.println("---------------Heart Rate--------------");
   const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
   byte rates[RATE_SIZE]; //Array of heart rates
   byte rateSpot = 0;
   long lastBeat = 0; //Time at which the last beat occurred
+  unsigned long startRecording = micros();
 
   float beatsPerMinute;
   int beatAvg;
 
-
-  long irValue = particleSensor.getIR();
-
-  if (checkForBeat(irValue) == true)
+  while(micros() - startRecording < pow(10,7)) // run for 10 seconds.
   {
-    //We sensed a beat!
-    long delta = millis() - lastBeat;
-    lastBeat = millis();
+    long irValue = particleSensor.getIR();
 
-    beatsPerMinute = 60 / (delta / 1000.0);
-
-    if (beatsPerMinute < 255 && beatsPerMinute > 20)
+    if (checkForBeat(irValue) == true)
     {
-      rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
-      rateSpot %= RATE_SIZE; //Wrap variable
+      //We sensed a beat!
+      long delta = millis() - lastBeat;
+      lastBeat = millis();
 
-      //Take average of readings
-      beatAvg = 0;
-      for (byte x = 0 ; x < RATE_SIZE ; x++)
-        beatAvg += rates[x];
-      beatAvg /= RATE_SIZE;
+      beatsPerMinute = 60 / (delta / 1000.0);
+
+      if (beatsPerMinute < 255 && beatsPerMinute > 20)
+      {
+        rates[rateSpot++] = (byte)beatsPerMinute; //Store this reading in the array
+        rateSpot %= RATE_SIZE; //Wrap variable
+
+        //Take average of readings
+        beatAvg = 0;
+        for (byte x = 0 ; x < RATE_SIZE ; x++)
+          beatAvg += rates[x];
+        beatAvg /= RATE_SIZE;
+      }
     }
+
+    Serial.print("IR=");
+    Serial.print(irValue);
+    Serial.print(", BPM=");
+    Serial.print(beatsPerMinute);
+    Serial.print(", Avg BPM=");
+    Serial.print(beatAvg);
+
+    if (irValue < 50000)
+      Serial.print(" No finger?");
   }
 
-  Serial.print("IR=");
-  Serial.print(irValue);
-  Serial.print(", BPM=");
-  Serial.print(beatsPerMinute);
-  Serial.print(", Avg BPM=");
-  Serial.print(beatAvg);
-
-  if (irValue < 50000)
-    Serial.print(" No finger?");
-
+  Serial.println("------------------------------------------");
   Serial.println();
   return beatsPerMinute;
 }
 
 void sendLoRa(int id, float temperaturLoRa, double ppm, float heartRate)
 {
-  Serial.print("Sending packet.");
-  Serial.println(id);
+  Serial.println("-------------------LoRa-------------------");
+  Serial.print("Start of packet: ");
+  Serial.print("ID: ");
+  Serial.print(id);
+  Serial.print(", ");
+  Serial.print("Temperature: ");
+  Serial.print(temperaturLoRa);
+  Serial.print(", ");
+  Serial.print("Carbon Monoxide: ");
+  Serial.print(ppm);
+  Serial.print(", ");
+  Serial.print("Heart Rate: ");
+  Serial.print(heartRate);
+  Serial.print(". End of Packet.");
+  Serial.println("------------------------------------------");
 
   // send packet
   LoRa.beginPacket();
@@ -82,9 +99,9 @@ void sendLoRa(int id, float temperaturLoRa, double ppm, float heartRate)
   LoRa.print(heartRate);
   LoRa.endPacket();
 
+  Serial.println();
   delay(5000);
 }
-
 
 void setup() {
   Serial.begin(9600);
