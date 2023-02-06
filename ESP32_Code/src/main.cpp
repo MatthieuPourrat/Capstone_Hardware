@@ -8,6 +8,7 @@
 #include "LoRa.h"
 #include <string.h>
 
+//This is the code for the hardware.
 
 #define ss 5
 #define rst 25
