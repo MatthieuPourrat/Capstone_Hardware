@@ -1,3 +1,8 @@
+//Library Created by: Group 13
+//Date: February 7, 2023
+//Concordia University
+//Capstone Group: 13
+//This library belongs to Group 13.
 #include <Arduino.h>
 #include <iostream>
 
@@ -6,6 +11,7 @@
 using namespace std;
 
 class DHT22{
+    //general buffers to store the data before processing.
     private:
         int dataBuffer[40] = {};
         int humidityBuffer[16], temperatureBuffer[16] = {};
