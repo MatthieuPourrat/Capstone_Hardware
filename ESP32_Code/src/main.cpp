@@ -5,7 +5,7 @@
 #include <Wire.h>
 #include "MAX30105.h" //https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include "heartRate.h"
-#include "LoRa.h"
+#include "LoRa.h" //https://github.com/sandeepmistry/arduino-LoRa
 #include <string.h>
 
 //Pin definition for LoRa
@@ -116,7 +116,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
 
-
+  //Block 1: Heart Rate Startup //https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
     Serial.println("MAX30105 was not found. Please check wiring/power. ");
@@ -125,6 +125,7 @@ void setup() {
 
   particleSensor.setup(); //Configure sensor with default settings
   particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+  //End of Block 1.
 
   delay(1000);
 
