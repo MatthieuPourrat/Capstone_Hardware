@@ -10,23 +10,23 @@ MQ7::MQ7()
     this->ppm = 0.0;
 }
 
-double MQ7::computeRs()
+float MQ7::computeRs()
 {
-    Rs = (vin - (analogRead(analogMQ) * pow(10, -3)))/(analogRead(analogMQ) * pow(10, -3));
-    Rs *= Rl;
+    Rs = (vin - (analogRead(analogMQ) * pow(10,-3)))/(analogRead(analogMQ) * pow(10,-3));
+    Rs = Rs * Rl;
     return Rs;
 }
 
-double MQ7::computePPM()
+float MQ7::computePPM()
 {
-    ppm = a * pow((Rs/Rl), b);
+    ppm = a * pow((Rs/Ro), b);
     return ppm;
 }
 
 void MQ7::printMQ7()
 {
     Serial.println("---------------Carbon Monoxide--------------");
-    Serial.print("The analog value is: ");
+    Serial.print("The ppm reading is: ");
     Serial.println(ppm);
 
     Serial.print("The digital value is: ");

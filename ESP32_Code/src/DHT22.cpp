@@ -61,7 +61,7 @@ float DHT22::computeHumidity()
     for(int i = 0; i < 16; i++)
         humidity = humidity + (dataBuffer[i] * pow(2,16-i-1));
 
-    return humidity;
+    return humidity/10;
 }
 
 float DHT22::computeTemperature()
@@ -77,7 +77,7 @@ float DHT22::computeTemperature()
         for(int i = 16; i < 32; i++)
             temperatur = temperatur + (dataBuffer[i] * pow(2,32-i-1));
     }
-    return temperatur;
+    return temperatur/10;
 }
 
 void DHT22::print()

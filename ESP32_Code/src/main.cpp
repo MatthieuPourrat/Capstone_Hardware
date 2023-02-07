@@ -16,7 +16,7 @@
 MAX30105 particleSensor;
 
 float tempLoRa, heartRateLoRa = 0.0;
-double ppmLoRa = 0.0;
+float ppmLoRa = 0.0;
 
 float heartRate()
 {
@@ -64,6 +64,8 @@ float heartRate()
 
     if (irValue < 50000)
       Serial.print(" No finger?");
+
+    Serial.println();
   }
 
   Serial.println("------------------------------------------");
@@ -71,7 +73,7 @@ float heartRate()
   return beatsPerMinute;
 }
 
-void sendLoRa(int id, float temperaturLoRa, double ppm, float heartRate)
+void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate)
 {
   Serial.println("-------------------LoRa-------------------");
   Serial.print("Start of packet: ");
@@ -86,7 +88,7 @@ void sendLoRa(int id, float temperaturLoRa, double ppm, float heartRate)
   Serial.print(", ");
   Serial.print("Heart Rate: ");
   Serial.print(heartRate);
-  Serial.print(". End of Packet.");
+  Serial.println(". End of Packet.");
   Serial.println("------------------------------------------");
 
   // send packet
@@ -107,6 +109,7 @@ void sendLoRa(int id, float temperaturLoRa, double ppm, float heartRate)
 void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
+
 
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
