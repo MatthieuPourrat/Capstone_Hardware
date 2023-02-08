@@ -24,13 +24,12 @@ float ppmLoRa,tempLoRa, heartRateLoRa = 0.0; //Variables for the LoRa transmissi
 float heartRate()
 {
   //98% of this code for the heartRate function is from: https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
-  Serial.println("---------------Heart Rate--------------");
+
+  unsigned long startRecording = micros();
   const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
   byte rates[RATE_SIZE]; //Array of heart rates
   byte rateSpot = 0;
   long lastBeat = 0; //Time at which the last beat occurred
-  unsigned long startRecording = micros();
-
   float beatsPerMinute;
   int beatAvg;
 
@@ -38,13 +37,13 @@ float heartRate()
   {
     long irValue = particleSensor.getIR();
 
-    if (checkForBeat(irValue) == true)
+    //We sensed a beat!
+    if(irValue > 50000)
     {
-      //We sensed a beat!
-      long delta = millis() - lastBeat;
+      float delta = millis() - lastBeat;
       lastBeat = millis();
 
-      beatsPerMinute = 60 / (delta / 1000.0);
+      beatsPerMinute = (60000 * (delta/1000)) / 100;
 
       if (beatsPerMinute < 255 && beatsPerMinute > 20)
       {
@@ -58,20 +57,24 @@ float heartRate()
         beatAvg /= RATE_SIZE;
       }
     }
-
+    
+  /*
     Serial.print("IR=");
     Serial.print(irValue);
     Serial.print(", BPM=");
     Serial.print(beatsPerMinute);
     Serial.print(", Avg BPM=");
     Serial.print(beatAvg);
-
+  */
+    Serial.println("Processing Heart Beat...........................................");
+    /*
     if (irValue < 50000)
       Serial.print(" No finger?");
-
     Serial.println();
+    */
   }
-
+  Serial.println("---------------Heart Rate--------------");
+  Serial.println(beatsPerMinute);
   Serial.println("------------------------------------------");
   Serial.println();
   return beatsPerMinute;
@@ -116,6 +119,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
 
+
   //Block 1: Heart Rate Startup //https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
@@ -128,7 +132,6 @@ void setup() {
   //End of Block 1.
 
   delay(1000);
-
   //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
   Serial.println("LoRa Starting");
   LoRa.setPins(ss,rst,dio0);
@@ -141,6 +144,7 @@ void setup() {
 }
 
 void loop() {
+
   MQ7 deviceMQ7; //New MQ& object
   DHT22 deviceDHT22; //New DHT22 object
   deviceMQ7.computeRs(); //Computer the surface resitance of the MQ7
