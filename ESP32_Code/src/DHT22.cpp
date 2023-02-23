@@ -83,7 +83,7 @@ float DHT22::computeTemperature() //Take the 17 to 32 bits and convert them to d
 {
     if(dataBuffer[0] == 1) //if the first bit of the sequence is one, the temperature is negative
     {
-        for(int i = 17; i < 32; i++)
+        for(int i = 16; i < 32; i++)
             temperatur = temperatur + (dataBuffer[i] * pow(2,32-i-1));
         temperatur *= (-1);
 
