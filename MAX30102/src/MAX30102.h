@@ -26,6 +26,12 @@ class MAX30102
         uint8_t readRegister(uint8_t reg);
         void enable_spo2();
         void clearFIFO();
-        uint8_t readRegisterFIFO()
+        void readRegisterFIFO();
+        uint32_t getIR();
+        uint32_t getRed();
+        float computeHR();
     private:
+        uint32_t red, ir;
+        uint8_t answers[6];
+        uint8_t hr;
 };

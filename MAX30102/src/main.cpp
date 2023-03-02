@@ -13,7 +13,7 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(device_max30102.readRegisterFIFO());
+  Serial.println(device_max30102.computeHR());
   Serial.println();
   delay(1000);
 }
