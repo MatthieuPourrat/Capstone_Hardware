@@ -93,5 +93,5 @@ float MAX30102::computeHR()
     if (ir < 2000 && red < 2000)
         return -1;
     else
-        return hr = ((float)red/(float)ir)*63;
+        return hr = ((float)ir/(float)red)*63;
 }
