@@ -30,8 +30,9 @@ class MAX30102
         uint32_t getIR();
         uint32_t getRed();
         float computeHR();
+        float HR();
     private:
         uint32_t red, ir;
         uint8_t answers[6];
-        uint8_t hr;
+        float hr;
 };
