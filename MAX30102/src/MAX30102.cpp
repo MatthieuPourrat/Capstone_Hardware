@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <Arduino.h>
 #include "MAX30102.h"
@@ -7,7 +8,7 @@ MAX30102::MAX30102()
 {
     ir = 0;
     red = 0;
-    hr = 0;
+    hr = 0.00;
 }
 
 void MAX30102::writeRegister(uint8_t reg, uint8_t data)
@@ -68,7 +69,6 @@ uint32_t MAX30102::getIR()
         ir |= answers[i];
     }
     ir &= 0x3FFFF;
-    Serial.println(ir);
     return ir;
 }
 
@@ -81,17 +81,37 @@ uint32_t MAX30102::getRed()
         red |= answers[i];
     }
     red &= 0x3FFFF;
-    Serial.println(red);
     return red;
 }
 
 float MAX30102::computeHR()
 {
-    this->readRegisterFIFO();
-    this->getRed();
-    this->getIR();
-    if (ir < 2000 && red < 2000)
-        return -1;
-    else
-        return hr = ((float)ir/(float)red)*63;
+    float sum = 0.0;
+    int count = 0;
+    while(count != 32)
+    {
+        this->readRegisterFIFO();
+        this->getRed();
+        this->getIR();
+        if (ir < 2000 && red < 2000)
+            hr = -10000.00;
+        else
+            hr = ((float)ir/(float)red)*63;
+        sum = sum + hr;
+        count++;
+    }
+    return sum/count;  
+}
+
+float MAX30102::HR()
+{
+    float start = micros();
+    int counter = 0;
+    float sum = 0.00;
+    while(micros() - start < 10000000)
+    {
+        sum += this->computeHR();
+        counter++;
+    }
+    return sum/counter;
 }
