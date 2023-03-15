@@ -18,6 +18,7 @@ MQ7::MQ7() //Constructor
 float MQ7::computeRs() //Compute the value of the surface resistance
 {
     //Rs is computed using the formula on the sensor data sheet.
+    Serial.println(analogRead(digitalMQ));
     Rs = (vin - (analogRead(analogMQ) * pow(10,-3)))/(analogRead(analogMQ) * pow(10,-3));
     Rs = Rs * Rl;
     return Rs;
