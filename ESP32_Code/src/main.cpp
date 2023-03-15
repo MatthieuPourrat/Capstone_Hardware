@@ -120,42 +120,42 @@ void setup() {
   Serial.println("Program has started.");
 
 
-  //Block 1: Heart Rate Startup //https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
-  if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
-  {
-    Serial.println("MAX30105 was not found. Please check wiring/power. ");
-    while (1);
-  }
+  // //Block 1: Heart Rate Startup //https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+  // if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
+  // {
+  //   Serial.println("MAX30105 was not found. Please check wiring/power. ");
+  //   while (1);
+  // }
 
-  particleSensor.setup(); //Configure sensor with default settings
-  particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
-  //End of Block 1.
+  // particleSensor.setup(); //Configure sensor with default settings
+  // particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+  // //End of Block 1.
 
-  delay(1000);
-  //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
-  Serial.println("LoRa Starting");
-  LoRa.setPins(ss,rst,dio0);
+  // delay(1000);
+  // //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
+  // Serial.println("LoRa Starting");
+  // LoRa.setPins(ss,rst,dio0);
 
-  if (!LoRa.begin(433E6)) {
-    Serial.println("Starting LoRa failed!");
-    while (1);
-  }
-  //End of Block 2.
+  // if (!LoRa.begin(433E6)) {
+  //   Serial.println("Starting LoRa failed!");
+  //   while (1);
+  // }
+  // //End of Block 2.
 }
 
 void loop() {
 
   MQ7 deviceMQ7; //New MQ& object
-  DHT22 deviceDHT22; //New DHT22 object
+  //DHT22 deviceDHT22; //New DHT22 object
   deviceMQ7.computeRs(); //Computer the surface resitance of the MQ7
   ppmLoRa = deviceMQ7.computePPM(); //Compute the PPM level, save value in ppmLoRa
   deviceMQ7.printMQ7(); //Print the results.
   delay(1000);
-  deviceDHT22.readSensor(); //read the sensor and get the data
-  deviceDHT22.computeHumidity(); //Compute RH
-  tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
-  deviceDHT22.print(); //print
-  delay(3000);
-  heartRateLoRa = heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa); //Use all the values and send the packet through LoRa.
+  // deviceDHT22.readSensor(); //read the sensor and get the data
+  // deviceDHT22.computeHumidity(); //Compute RH
+  // tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
+  // deviceDHT22.print(); //print
+  // delay(3000);
+  // heartRateLoRa = heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
+  // sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa); //Use all the values and send the packet through LoRa.
 }
