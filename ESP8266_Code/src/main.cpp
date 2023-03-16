@@ -86,6 +86,7 @@ void loop() {
   //sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa); //Use all the values and send the packet through LoRa.
   while(software_connection.available())//While there are characters to come from the GPS
   {
-    Serial.print(software_connection.read());//This feeds the serial NMEA data into the library one char at a time
+    Serial.print(software_connection.read());
   }
+  
 }
