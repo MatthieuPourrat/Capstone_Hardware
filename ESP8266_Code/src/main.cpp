@@ -6,6 +6,8 @@
 #include "LoRa.h" //https://github.com/sandeepmistry/arduino-LoRa
 #include <string.h>
 #include "SoftwareSerial.h"
+#include "GPS.h"
+#include "MAX30102.h"
 
 //Pin definition for LoRa
 #define ss 5
@@ -15,9 +17,12 @@
 
 SoftwareSerial software_connection(3,1);
 
+GPS gps;
+
+
 float ppmLoRa,tempLoRa, heartRateLoRa = 0.0; //Variables for the LoRa transmission
 
-void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate) //LoRa function to send the packets
+void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, float latitude, float longitude, char latChar, char longChar) //LoRa function to send the packets
 {
   //Most of the code for this funtion is from: https://github.com/sandeepmistry/arduino-LoRa. 
   //Adapted for the use of this project and the microcontroller used.
@@ -34,6 +39,14 @@ void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate) //LoRa f
   Serial.print(", ");
   Serial.print("Heart Rate: ");
   Serial.print(heartRate);
+  Serial.print(", ");
+  Serial.print("Latitude: ");
+  Serial.print(latChar);
+  Serial.print(latitude);
+  Serial.print(", ");
+  Serial.print("Longitude: ");
+  Serial.print(longChar);
+  Serial.print(longitude);
   Serial.println(". End of Packet.");
   Serial.println("------------------------------------------");
 
@@ -46,6 +59,13 @@ void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate) //LoRa f
   LoRa.print(ppm);
   LoRa.print("c");
   LoRa.print(heartRate);
+  LoRa.print("x");
+  LoRa.print(latitude);
+  LoRa.print(latChar);
+  LoRa.print("y");
+  LoRa.print(longitude);
+  LoRa.print(longChar);
+  LoRa.print("\r\n");
   LoRa.endPacket();
 
   Serial.println();
@@ -83,10 +103,12 @@ void loop() {
   // deviceDHT22.print(); //print
   // delay(3000);
   //heartRateLoRa = heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  //sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa); //Use all the values and send the packet through LoRa.
-  while(software_connection.available())//While there are characters to come from the GPS
+  
+  while(software_connection.available() > 0)//While there are characters to come from the GPS
   {
-    Serial.print(software_connection.read());
+    gps.readCoordinates(software_connection.read());
   }
+  gps.readCoordinates('/');
+  sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, gps.getLatitude(), gps.getLongitude(),gps.getLatitudeChar(), gps.getLongitudeChar()); //Use all the values and send the packet through LoRa.
   
 }

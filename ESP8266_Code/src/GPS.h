@@ -5,9 +5,16 @@
 class GPS
 {
     public:
-        float latitude, longitude;
-        std::string coordinates;
-    private:
+        GPS();
         void readCoordinates(char c);
+        float getLatitude();
+        float getLongitude();
+        char getLatitudeChar();
+        char getLongitudeChar();
+    private:
+        float latitude, longitude;
+        char latChar, longChar;
+        std::string coordinates;
+        
 
 };
