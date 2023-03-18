@@ -18,7 +18,6 @@ MQ7::MQ7() //Constructor
 float MQ7::computeRs() //Compute the value of the surface resistance
 {
     //Rs is computed using the formula on the sensor data sheet.
-    Serial.println(analogRead(digitalMQ));
     Rs = (vin - (analogRead(analogMQ) * pow(10,-3)))/(analogRead(analogMQ) * pow(10,-3));
     Rs = Rs * Rl;
     return Rs;
@@ -35,7 +34,7 @@ void MQ7::printMQ7()
     Serial.println("---------------Carbon Monoxide--------------");
     Serial.print("The ppm reading is: ");
     Serial.println(ppm);
-
+/*
     Serial.print("The digital value is: ");
     Serial.println(digitalRead(digitalMQ));
 
@@ -43,7 +42,7 @@ void MQ7::printMQ7()
         Serial.println("CO detected.");
     else
         Serial.println("CO not detected.");
-    
+*/
     Serial.println("---------------------------------------------");
 
     delay(1000);

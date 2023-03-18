@@ -11,11 +11,11 @@
 
 //Pin definition for LoRa
 #define ss 15
-#define rst 16
-#define dio0 5
+#define rst 0
+#define dio0 16
 //
 
-SoftwareSerial software_connection(4,5);
+SoftwareSerial software_connection(9,10);
 
 GPS deviceGPS;
 MQ7 deviceMQ7; //New MQ& object
@@ -49,10 +49,15 @@ void getCoordinates()
   longLoRa = deviceGPS.getLongitude();
   latCharLoRa = deviceGPS.getLatitudeChar();
   longCharLoRa = deviceGPS.getLongitudeChar();
-  Serial.println(latLoRa);
-  Serial.println(latCharLoRa);
-  Serial.println(longLoRa);
-  Serial.println(longCharLoRa);
+  // Serial.println(latLoRa);
+  // Serial.println(latCharLoRa);
+  // Serial.println(longLoRa);
+  // Serial.println(longCharLoRa);
+}
+
+void heartRate()
+{
+  heartRateLoRa = deviceMAX.HR();
 }
 
 void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, String latitude, String longitude, char latChar, char longChar) //LoRa function to send the packets
@@ -111,30 +116,36 @@ void setup() {
 
   software_connection.begin(9600);
   //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
-  // Serial.println("LoRa Starting");
-  // LoRa.setPins(ss,rst,dio0);
+  Serial.println("LoRa Starting");
+  LoRa.setPins(ss,rst,dio0);
 
-  // if (!LoRa.begin(433E6)) {
-  //   Serial.println("Starting LoRa failed!");
-  //   while (1);
-  // }
+  if (!LoRa.begin(433E6)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
+
+  Wire.begin();
+  deviceMAX.clearFIFO();
+  deviceMAX.enable_spo2();
   //End of Block 2.
 }
 
 void loop() {
-  //MQ7 deviceMQ7; //New MQ& object
-  //DHT22 deviceDHT22; //New DHT22 object
-  // deviceMQ7.computeRs(); //Computer the surface resitance of the MQ7
-  // ppmLoRa = deviceMQ7.computePPM(); //Compute the PPM level, save value in ppmLoRa
-  // deviceMQ7.printMQ7(); //Print the results.
-  // delay(1000);
-  // deviceDHT22.readSensor(); //read the sensor and get the data
-  // deviceDHT22.computeHumidity(); //Compute RH
-  // tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
-  // deviceDHT22.print(); //print
-  // delay(3000);
-  //heartRateLoRa = heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
+  MQ7 deviceMQ7; //New MQ& object
+  DHT22 deviceDHT22; //New DHT22 object
+  deviceMQ7.computeRs(); //Computer the surface resitance of the MQ7
+  ppmLoRa = deviceMQ7.computePPM(); //Compute the PPM level, save value in ppmLoRa
+  deviceMQ7.printMQ7(); //Print the results.
+  delay(1000);
+  deviceDHT22.readSensor(); //read the sensor and get the data
+  deviceDHT22.computeHumidity(); //Compute RH
+  tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
+  deviceDHT22.print(); //print
+  delay(3000);
+  float lastTime = micros();
+  while(micros() - lastTime < 10)
+    heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
   getCoordinates();
-  //sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, gps.getLatitude(), gps.getLongitude(),gps.getLatitudeChar(), gps.getLongitudeChar()); //Use all the values and send the packet through LoRa.
+  sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, deviceGPS.getLatitude(), deviceGPS.getLongitude(),deviceGPS.getLatitudeChar(), deviceGPS.getLongitudeChar()); //Use all the values and send the packet through LoRa.
   //sendLoRa(1,22.00, 1.2, 72.00, 45.1234,87.1923,'N', 'W'); //Use all the values and send the packet through LoRa.
 }

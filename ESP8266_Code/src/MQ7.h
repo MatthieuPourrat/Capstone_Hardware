@@ -18,7 +18,7 @@ Calculations were done by Group 13. The coefficients are our values.
 */
 
 #define analogMQ A0
-#define digitalMQ 16
+//#define digitalMQ 16
 #define vin 5 //V
 #define Rl 10000 //Ohms
 #define Ro 2000 //Ohms
