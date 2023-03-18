@@ -6,8 +6,8 @@ using namespace std;
 
 GPS::GPS()
 {
-    this->latitude = 0.00;
-    this->longitude = 0.00;
+    this->latitude = -9999.00;
+    this->longitude = -9999.00;
     this->latChar = 'I';
     this->longChar = 'I';
     this->coordinates = "";
