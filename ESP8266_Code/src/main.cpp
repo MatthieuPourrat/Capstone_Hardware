@@ -10,19 +10,52 @@
 #include "MAX30102.h"
 
 //Pin definition for LoRa
-#define ss 5
-#define rst 25
-#define dio0 33
+#define ss 15
+#define rst 16
+#define dio0 5
 //
 
-SoftwareSerial software_connection(3,1);
+SoftwareSerial software_connection(4,5);
 
-GPS gps;
+GPS deviceGPS;
+MQ7 deviceMQ7; //New MQ& object
+DHT22 deviceDHT22; //New DHT22 object
+MAX30102 deviceMAX;
+
+char c_coordinates;
+String NMEA;
 
 
 float ppmLoRa,tempLoRa, heartRateLoRa = 0.0; //Variables for the LoRa transmission
+String latLoRa, longLoRa;
+char latCharLoRa, longCharLoRa;
 
-void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, float latitude, float longitude, char latChar, char longChar) //LoRa function to send the packets
+void getCoordinates()
+{
+  while(software_connection.available() > 0)
+  {
+    c_coordinates = software_connection.read();
+    if(c_coordinates == '$' && NMEA.substring(0,7) == "$GNRMC,")
+    {
+      deviceGPS.readCoordinates(NMEA);
+      NMEA = "";
+      break;
+    } 
+    else if(c_coordinates == '$')
+      NMEA = "";
+    NMEA.concat(c_coordinates);
+  }
+  latLoRa = deviceGPS.getLatitude();
+  longLoRa = deviceGPS.getLongitude();
+  latCharLoRa = deviceGPS.getLatitudeChar();
+  longCharLoRa = deviceGPS.getLongitudeChar();
+  Serial.println(latLoRa);
+  Serial.println(latCharLoRa);
+  Serial.println(longLoRa);
+  Serial.println(longCharLoRa);
+}
+
+void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, String latitude, String longitude, char latChar, char longChar) //LoRa function to send the packets
 {
   //Most of the code for this funtion is from: https://github.com/sandeepmistry/arduino-LoRa. 
   //Adapted for the use of this project and the microcontroller used.
@@ -77,7 +110,6 @@ void setup() {
   Serial.println("Program has started.");
 
   software_connection.begin(9600);
-
   //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
   // Serial.println("LoRa Starting");
   // LoRa.setPins(ss,rst,dio0);
@@ -90,7 +122,6 @@ void setup() {
 }
 
 void loop() {
-
   //MQ7 deviceMQ7; //New MQ& object
   //DHT22 deviceDHT22; //New DHT22 object
   // deviceMQ7.computeRs(); //Computer the surface resitance of the MQ7
@@ -103,12 +134,7 @@ void loop() {
   // deviceDHT22.print(); //print
   // delay(3000);
   //heartRateLoRa = heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  
-  while(software_connection.available() > 0)//While there are characters to come from the GPS
-  {
-    gps.readCoordinates(software_connection.read());
-  }
-  gps.readCoordinates('/');
-  sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, gps.getLatitude(), gps.getLongitude(),gps.getLatitudeChar(), gps.getLongitudeChar()); //Use all the values and send the packet through LoRa.
-  
+  getCoordinates();
+  //sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, gps.getLatitude(), gps.getLongitude(),gps.getLatitudeChar(), gps.getLongitudeChar()); //Use all the values and send the packet through LoRa.
+  //sendLoRa(1,22.00, 1.2, 72.00, 45.1234,87.1923,'N', 'W'); //Use all the values and send the packet through LoRa.
 }

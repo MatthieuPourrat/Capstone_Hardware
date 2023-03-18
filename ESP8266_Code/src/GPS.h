@@ -1,20 +1,22 @@
 #include <Arduino.h>
 #include <iostream>
-#include <string>
+#include "SoftwareSerial.h"
+
+using namespace std;
 
 class GPS
 {
     public:
         GPS();
-        void readCoordinates(char c);
-        float getLatitude();
-        float getLongitude();
+        void readCoordinates(String c);
+        String getLatitude();
+        String getLongitude();
         char getLatitudeChar();
         char getLongitudeChar();
     private:
-        float latitude, longitude;
+        String latitude, longitude;
         char latChar, longChar;
-        std::string coordinates;
+        String coordinates;
         
 
 };
