@@ -5,17 +5,16 @@
 #include <Wire.h>
 #include "LoRa.h" //https://github.com/sandeepmistry/arduino-LoRa
 #include <string.h>
-#include "SoftwareSerial.h"
+#include "HardwareSerial.h"
 #include "GPS.h"
 #include "MAX30102.h"
 
 //Pin definition for LoRa
-#define ss 15
-#define rst 0
-#define dio0 16
+#define ss 5
+#define rst 25
+#define dio0 33
 //
 
-SoftwareSerial software_connection(9,10);
 
 GPS deviceGPS;
 MQ7 deviceMQ7; //New MQ& object
@@ -32,9 +31,9 @@ char latCharLoRa, longCharLoRa;
 
 void getCoordinates()
 {
-  while(software_connection.available() > 0)
+  while(Serial1.available() > 0)
   {
-    c_coordinates = software_connection.read();
+    c_coordinates = Serial1.read();
     if(c_coordinates == '$' && NMEA.substring(0,7) == "$GNRMC,")
     {
       deviceGPS.readCoordinates(NMEA);
@@ -114,7 +113,6 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Program has started.");
 
-  software_connection.begin(9600);
   //Block 2: LoRa startup from https://github.com/sandeepmistry/arduino-LoRa
   Serial.println("LoRa Starting");
   LoRa.setPins(ss,rst,dio0);

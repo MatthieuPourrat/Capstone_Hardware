@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <iostream>
-#include "SoftwareSerial.h"
 
 using namespace std;
 

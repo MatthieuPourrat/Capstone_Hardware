@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <iostream>
 
-#define digitalDHT 2
+#define digitalDHT 32
 
 using namespace std;
 
