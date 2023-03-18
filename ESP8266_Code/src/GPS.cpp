@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "GPS.h"
-#include "SoftwareSerial.h"
+#include "HardwareSerial.h"
 
 using namespace std;
 
