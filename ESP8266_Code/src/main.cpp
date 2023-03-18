@@ -29,11 +29,14 @@ float ppmLoRa,tempLoRa, heartRateLoRa = 0.0; //Variables for the LoRa transmissi
 String latLoRa, longLoRa;
 char latCharLoRa, longCharLoRa;
 
+HardwareSerial hardware_serial(2);
+
+
 void getCoordinates()
 {
-  while(Serial1.available() > 0)
+  while(hardware_serial.available() > 0)
   {
-    c_coordinates = Serial1.read();
+    c_coordinates = hardware_serial.read();
     if(c_coordinates == '$' && NMEA.substring(0,7) == "$GNRMC,")
     {
       deviceGPS.readCoordinates(NMEA);
@@ -48,10 +51,10 @@ void getCoordinates()
   longLoRa = deviceGPS.getLongitude();
   latCharLoRa = deviceGPS.getLatitudeChar();
   longCharLoRa = deviceGPS.getLongitudeChar();
-  // Serial.println(latLoRa);
-  // Serial.println(latCharLoRa);
-  // Serial.println(longLoRa);
-  // Serial.println(longCharLoRa);
+  Serial.println(latLoRa);
+  Serial.println(latCharLoRa);
+  Serial.println(longLoRa);
+  Serial.println(longCharLoRa);
 }
 
 void heartRate()
@@ -126,6 +129,8 @@ void setup() {
   deviceMAX.clearFIFO();
   deviceMAX.enable_spo2();
   //End of Block 2.
+
+  hardware_serial.begin(9600, SERIAL_8N1, GPIO_NUM_17, GPIO_NUM_16);
 }
 
 void loop() {
@@ -143,7 +148,11 @@ void loop() {
   float lastTime = micros();
   while(micros() - lastTime < 10)
     heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
+  lastTime = micros();
   getCoordinates();
+
+
+
   sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, deviceGPS.getLatitude(), deviceGPS.getLongitude(),deviceGPS.getLatitudeChar(), deviceGPS.getLongitudeChar()); //Use all the values and send the packet through LoRa.
   //sendLoRa(1,22.00, 1.2, 72.00, 45.1234,87.1923,'N', 'W'); //Use all the values and send the packet through LoRa.
 }
