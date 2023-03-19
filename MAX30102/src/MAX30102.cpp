@@ -93,6 +93,8 @@ float MAX30102::computeHR()
         this->readRegisterFIFO();
         this->getRed();
         this->getIR();
+                Serial.println(ir);
+        Serial.println(red);
         if (ir < 2000 && red < 2000)
             hr = -10000.00;
         else
