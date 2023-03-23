@@ -11,11 +11,13 @@ float start, sum = 0.00;
 void setup() {
   Serial.begin(9600);
   Wire.begin();
+
   device_max30102.clearFIFO();
   device_max30102.enable_spo2();
 }
 
 void loop() {
+  Serial.println("The BPM is: ");
   Serial.println(device_max30102.HR());
   delay(1000);
 }
