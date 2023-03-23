@@ -12,6 +12,7 @@ class GPS
         String getLongitude();
         char getLatitudeChar();
         char getLongitudeChar();
+        void print();
     private:
         String latitude, longitude;
         char latChar, longChar;

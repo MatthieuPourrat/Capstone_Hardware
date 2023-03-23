@@ -3,6 +3,13 @@
 //Concordia University
 //Capstone Group: 13
 //This library belongs to Group 13.
+
+//This library interfaces the DHT22 with the microcontroller.
+//It used the protocol described in the datasheet to extract each of the 40 bits to calculate the Humidity and Temperature
+//The first 16 bits are one big number divided by 100 that gives the Humidity level.
+//The thrid and fourth byte are one big number divided by 100 that gives the Temperature in Celcius.
+//In addition, the checksum has been implemented to verify that the data recieved is correct.
+
 #include <Arduino.h>
 #include <iostream>
 #include "DHT22.h"
@@ -25,6 +32,7 @@ DHT22::~DHT22(){ //destructor
     this->bit=0;
 };
 
+//Following commented function works with the ESP8266
 // void DHT22::readSensor() //read the data from the sensor.
 // {
 //     humidity = 0.0;
@@ -164,7 +172,9 @@ bool DHT22::checkSum() //Take the first 16 bits and convert them to decimal to g
     int _byte3 = 0;
     int _byte4 = 0;
     uint16_t temp;
-    for(int i = 0; i < 8; i++)
+    //The following for loop stores in each _byteX variable, the value in decimal of 1 of the 4 bytes
+    //that are collected from the sensor.
+    for(int i = 0; i < 8; i++) //loop optimization by calculating each byte in one loop.
     {
         _byte1 = _byte1 +  (dataBuffer[i] * pow(2,7-i));
         _byte2 = _byte2 + (dataBuffer[i+8] * pow(2,7-i));
@@ -172,13 +182,13 @@ bool DHT22::checkSum() //Take the first 16 bits and convert them to decimal to g
         _byte4 = _byte4 +  (dataBuffer[i+24] * pow(2,7-i));
     }
     sum = _byte1 + _byte2 + _byte3 + _byte4;
-    for(int i = 32; i < 40; i++)
+    for(int i = 32; i < 40; i++) //compute the decimal value of the checksum.
         checksum = checksum + (dataBuffer[i] * pow(2,40-i-1));
-    if(sum == checksum)
+    if(sum == checksum) //if the sum of each byte is equal to the checksum, then the result is correct.
         return true;
     else{
-        temp = checksum;
-        temp |= 0x100;
+        temp = checksum; //was temp = checksum before.
+        temp |= 0x100; //Sometimes, a carry happens, this mask discards the carry.
         if(temp == sum)
             return true;
         else

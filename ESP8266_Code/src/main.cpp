@@ -21,6 +21,7 @@ MQ7 deviceMQ7; //New MQ& object
 DHT22 deviceDHT22; //New DHT22 object
 MAX30102 deviceMAX;
 
+//Variables for the GPS.
 char c_coordinates;
 String NMEA;
 
@@ -34,27 +35,28 @@ HardwareSerial hardware_serial(2);
 
 void getCoordinates()
 {
-  while(hardware_serial.available() > 0)
+  while(hardware_serial.available() > 0) //While there is data on the bus.
   {
     c_coordinates = hardware_serial.read();
-    if(c_coordinates == '$' && NMEA.substring(0,7) == "$GNRMC,")
+    if(c_coordinates == '$' && NMEA.substring(0,7) == "$GNRMC,") //if the character is $, it means that we are on a new command.
+    //&& if the string from 0 to 6 is equal to $GNRMC then this is the string we need to parse.
     {
-      deviceGPS.readCoordinates(NMEA);
-      NMEA = "";
+      deviceGPS.readCoordinates(NMEA); //Send the string to the library for parsing
+      NMEA = ""; //reset the string
       break;
     } 
-    else if(c_coordinates == '$')
-      NMEA = "";
+    else if(c_coordinates == '$') // If just a new NMEA string
+      NMEA = ""; //Reset string
     NMEA.concat(c_coordinates);
   }
   latLoRa = deviceGPS.getLatitude();
   longLoRa = deviceGPS.getLongitude();
   latCharLoRa = deviceGPS.getLatitudeChar();
   longCharLoRa = deviceGPS.getLongitudeChar();
-  Serial.println(latLoRa);
-  Serial.println(latCharLoRa);
-  Serial.println(longLoRa);
-  Serial.println(longCharLoRa);
+  // Serial.println(latLoRa);
+  // Serial.println(latCharLoRa);
+  // Serial.println(longLoRa);
+  // Serial.println(longCharLoRa);
 }
 
 void heartRate()
@@ -92,12 +94,13 @@ void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, String l
 
   // send packet
   LoRa.beginPacket();
-  LoRa.print(id);
   LoRa.print("a");
-  LoRa.print(temperaturLoRa);
+  LoRa.print(id);
   LoRa.print("b");
-  LoRa.print(ppm);
+  LoRa.print(temperaturLoRa);
   LoRa.print("c");
+  LoRa.print(ppm);
+  LoRa.print("d");
   LoRa.print(heartRate);
   LoRa.print("x");
   LoRa.print(latitude);
@@ -105,7 +108,6 @@ void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, String l
   LoRa.print("y");
   LoRa.print(longitude);
   LoRa.print(longChar);
-  LoRa.print("\r\n");
   LoRa.endPacket();
 
   Serial.println();
@@ -130,7 +132,7 @@ void setup() {
   deviceMAX.enable_spo2();
   //End of Block 2.
 
-  hardware_serial.begin(9600, SERIAL_8N1, GPIO_NUM_17, GPIO_NUM_16);
+  hardware_serial.begin(9600, SERIAL_8N1, GPIO_NUM_16, GPIO_NUM_17);
 }
 
 void loop() {
@@ -146,13 +148,12 @@ void loop() {
   deviceDHT22.print(); //print
   delay(3000);
   float lastTime = micros();
-  while(micros() - lastTime < 10)
+  while(micros() - lastTime < 10) // Run the heart beat for 10 seconds.
     heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  lastTime = micros();
-  getCoordinates();
+  getCoordinates(); //Get the coordinates.
 
 
 
   sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, deviceGPS.getLatitude(), deviceGPS.getLongitude(),deviceGPS.getLatitudeChar(), deviceGPS.getLongitudeChar()); //Use all the values and send the packet through LoRa.
-  //sendLoRa(1,22.00, 1.2, 72.00, 45.1234,87.1923,'N', 'W'); //Use all the values and send the packet through LoRa.
+  //sendLoRa(1,tempLoRa, ppmLoRa, heartRateLoRa, "45.49750","73.57870",'N', 'W'); //Use all the values and send the packet through LoRa.
 }
