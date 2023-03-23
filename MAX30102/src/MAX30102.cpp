@@ -93,8 +93,14 @@ float MAX30102::computeHR()
         this->readRegisterFIFO();
         this->getRed();
         this->getIR();
+<<<<<<< Updated upstream
                 Serial.println(ir);
         Serial.println(red);
+=======
+        Serial.println(ir);
+        Serial.println(red);
+
+>>>>>>> Stashed changes
         if (ir < 2000 && red < 2000)
             hr = -10000.00;
         else
