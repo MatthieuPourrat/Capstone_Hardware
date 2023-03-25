@@ -144,11 +144,11 @@ void loop() {
   deviceDHT22.computeHumidity(); //Compute RH
   tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
   deviceDHT22.print(); //print
-  delay(3000);
-  float lastTime = micros();
-  while(micros() - lastTime < 10)
-    heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  lastTime = micros();
+  delay(1000);
+  //float lastTime = micros();
+  //while(micros() - lastTime < 10)
+  heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
+  //lastTime = micros();
   getCoordinates();
 
 
