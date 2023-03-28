@@ -4,4 +4,4 @@ This repository includes the code that is used and uploaded to the ESP32 microco
 
 The code for the ESP32 includes a custom class for the MQ7, and for the DHT22 as well as for the MAX30102.
 
-Current Working Version 1.0
+Current Working Version 1.1
