@@ -170,10 +170,9 @@ bool DHT22::checkSum() //Take the first 16 bits and convert them to decimal to g
         _byte2 = _byte2 + (dataBuffer[i+8] * pow(2,7-i));
         _byte3 = _byte3 + (dataBuffer[i+16] * pow(2,7-i));
         _byte4 = _byte4 +  (dataBuffer[i+24] * pow(2,7-i));
+        checksum = checksum + (dataBuffer[i+36] * pow(2,7-i));
     }
     sum = _byte1 + _byte2 + _byte3 + _byte4;
-    for(int i = 32; i < 40; i++)
-        checksum = checksum + (dataBuffer[i] * pow(2,40-i-1));
     sum |= 0x100;
     if(sum == checksum)
         return true;
