@@ -25,11 +25,13 @@ char c_coordinates;
 String NMEA;
 
 
-float ppmLoRa,tempLoRa, heartRateLoRa = 0.0; //Variables for the LoRa transmission
+float ppmLoRa,tempLoRa = 0.0;
+int heartRateLoRa = 0; //Variables for the LoRa transmission
 String latLoRa, longLoRa;
 char latCharLoRa, longCharLoRa;
 
 HardwareSerial hardware_serial(2);
+HardwareSerial hs(1);
 
 
 void getCoordinates()
@@ -51,10 +53,10 @@ void getCoordinates()
   longLoRa = deviceGPS.getLongitude();
   latCharLoRa = deviceGPS.getLatitudeChar();
   longCharLoRa = deviceGPS.getLongitudeChar();
-  Serial.println(latLoRa);
-  Serial.println(latCharLoRa);
-  Serial.println(longLoRa);
-  Serial.println(longCharLoRa);
+  // Serial.println(latLoRa);
+  // Serial.println(latCharLoRa);
+  // Serial.println(longLoRa);
+  // Serial.println(longCharLoRa);
 }
 
 void heartRate()
@@ -62,7 +64,18 @@ void heartRate()
   heartRateLoRa = deviceMAX.HR();
 }
 
-void sendLoRa(int id, float temperaturLoRa, float ppm, float heartRate, String latitude, String longitude, char latChar, char longChar) //LoRa function to send the packets
+void heartRate2()
+{
+  int value = hs.read();
+  if(value < 50)
+    heartRateLoRa = -10000;
+  else
+    heartRateLoRa = (int)value;
+  Serial.println(value);
+  delay(1000);
+}
+
+void sendLoRa(int id, float temperaturLoRa, float ppm, int heartRate, String latitude, String longitude, char latChar, char longChar) //LoRa function to send the packets
 {
   //Most of the code for this funtion is from: https://github.com/sandeepmistry/arduino-LoRa. 
   //Adapted for the use of this project and the microcontroller used.
@@ -131,6 +144,7 @@ void setup() {
   //End of Block 2.
 
   hardware_serial.begin(9600, SERIAL_8N1, GPIO_NUM_17, GPIO_NUM_16);
+  hs.begin(9600, SERIAL_8N1, GPIO_NUM_15, GPIO_NUM_2); //rx,tx
 }
 
 void loop() {
@@ -145,10 +159,7 @@ void loop() {
   tempLoRa = deviceDHT22.computeTemperature(); //Compute temperature and assign it to tempLoRa
   deviceDHT22.print(); //print
   delay(1000);
-  //float lastTime = micros();
-  //while(micros() - lastTime < 10)
-  heartRate(); //Run the heart beat function and assign the value to hearRateLoRa
-  //lastTime = micros();
+  heartRate2(); //Run the heart beat function and assign the value to hearRateLoRa
   getCoordinates();
 
 
