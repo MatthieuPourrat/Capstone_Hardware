@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "MAX30102.h"
+#include "SoftwareSerial.h"
 
 MAX30102 device_max30102;
-uint8_t answer =  0;
+int answer =  0;
 float values[32];
 int counter = 0;
 float start, sum = 0.00;
@@ -17,7 +18,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("The BPM is: ");
-  Serial.println(device_max30102.HR());
-  delay(1000);
+  Serial.write(answer);
+  answer = device_max30102.HR();
 }

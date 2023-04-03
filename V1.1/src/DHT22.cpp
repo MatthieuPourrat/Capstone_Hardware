@@ -157,23 +157,22 @@ void DHT22::print()
 
 bool DHT22::checkSum() //Take the first 16 bits and convert them to decimal to get the RH
 {
-    int sum = 0;
+    uint16_t sum = 0;
     int checksum = 0;
     int _byte1 = 0;
     int _byte2 = 0;
     int _byte3 = 0;
     int _byte4 = 0;
-    uint16_t temp;
     for(int i = 0; i < 8; i++)
     {
         _byte1 = _byte1 +  (dataBuffer[i] * pow(2,7-i));
         _byte2 = _byte2 + (dataBuffer[i+8] * pow(2,7-i));
         _byte3 = _byte3 + (dataBuffer[i+16] * pow(2,7-i));
         _byte4 = _byte4 +  (dataBuffer[i+24] * pow(2,7-i));
-        checksum = checksum + (dataBuffer[i+36] * pow(2,7-i));
+        checksum = checksum + (dataBuffer[i+32] * pow(2,7-i));
     }
     sum = _byte1 + _byte2 + _byte3 + _byte4;
-    sum |= 0x100;
+    sum &= 0xFEFF;
     if(sum == checksum)
         return true;
     else
